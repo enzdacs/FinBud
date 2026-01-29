@@ -1447,10 +1447,11 @@ document.getElementById('copyTranslation').addEventListener('click', () => {
 
 // Map Navigation using Geoapify
 // ⚠️ IMPORTANT: Replace this with your valid Geoapify API key from https://www.geoapify.com/
-const GEOAPIFY_API_KEY = 'ce337f6fc1c54d5883c54a1596eb1132';
+// Geoapify API key is now handled by Netlify Functions (serverless)
+// No need to expose API key in client-side code!
 
 // If API key is invalid, we'll use OpenStreetMap as fallback
-const USE_GEOAPIFY_TILES = true; // Set to false to use free OpenStreetMap tiles instead
+const USE_GEOAPIFY_TILES = false; // Set to false to use free OpenStreetMap tiles instead (recommended with serverless functions)
 
 let currentTileLayer = null;
 let routeLayer = null;
@@ -1546,14 +1547,11 @@ document.getElementById('geocodeBtn').addEventListener('click', async () => {
     try {
         showToast('Searching location...', 'info');
         
-        const url = `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(searchQuery)}&apiKey=${GEOAPIFY_API_KEY}`;
+        // Use Netlify Function instead of direct API call
+        const url = `/api/geocode?text=${encodeURIComponent(searchQuery)}`;
         console.log('Fetching:', url);
         
         const response = await fetch(url);
-        
-        if (response.status === 401) {
-            throw new Error('Invalid API key. Please get a valid key from https://www.geoapify.com/');
-        }
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -1645,10 +1643,10 @@ document.getElementById('useCurrentSource').addEventListener('click', () => {
             const lon = position.coords.longitude;
             sourceCoords = [lat, lon];
             
-            // Reverse geocode to get address
+            // Reverse geocode to get address using Netlify Function
             try {
                 const response = await fetch(
-                    `https://api.geoapify.com/v1/geocode/reverse?lat=${lat}&lon=${lon}&apiKey=${GEOAPIFY_API_KEY}`
+                    `/api/reverse-geocode?lat=${lat}&lon=${lon}`
                 );
                 const data = await response.json();
                 
@@ -1672,7 +1670,7 @@ document.getElementById('useCurrentSource').addEventListener('click', () => {
 async function geocodeAddress(address) {
     try {
         const response = await fetch(
-            `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(address)}&apiKey=${GEOAPIFY_API_KEY}`
+            `/api/geocode?text=${encodeURIComponent(address)}`
         );
         const data = await response.json();
         
@@ -1716,22 +1714,16 @@ document.getElementById('generateRouteBtn').addEventListener('click', async () =
             return;
         }
         
-        // Fetch route from Geoapify
-        // Geoapify Routing API expects waypoints in lat,lon format (opposite of geocoding!)
+        // Fetch route from Geoapify via Netlify Function
+        // Geoapify Routing API expects waypoints in lat,lon format
         const waypoints = `${sourceCoords[0]},${sourceCoords[1]}|${destCoords[0]},${destCoords[1]}`;
         console.log('Source coords [lat,lon]:', sourceCoords);
         console.log('Dest coords [lat,lon]:', destCoords);
         console.log('Waypoints for API [lat,lon]:', waypoints);
         
         const response = await fetch(
-            `https://api.geoapify.com/v1/routing?waypoints=${waypoints}&mode=${currentTransportMode}&apiKey=${GEOAPIFY_API_KEY}`
+            `/api/routing?waypoints=${waypoints}&mode=${currentTransportMode}`
         );
-        
-        if (response.status === 401) {
-            showToast('Invalid API key. Please update in script.js', 'error');
-            console.error('Invalid Geoapify API key. Get a free key at https://www.geoapify.com/');
-            return;
-        }
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);

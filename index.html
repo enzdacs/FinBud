@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinBud - Smart Expense Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Auth Container -->
+    <div id="authContainer" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span>FinBud</span>
+                </div>
+                <p class="auth-subtitle">Track expenses, manage money smarter</p>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form">
+                <h2>Welcome Back</h2>
+                <div class="input-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required placeholder="your@email.com">
+                </div>
+                <div class="input-group">
+                    <label for="loginPassword">Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="loginPassword" required placeholder="••••••••">
+                        <button type="button" class="password-toggle" data-target="loginPassword">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Sign In</button>
+                <p class="auth-switch">Don't have an account? <a href="#" id="showSignup">Sign up</a></p>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" style="display: none;">
+                <h2>Create Account</h2>
+                <div class="input-group">
+                    <label for="signupName">Full Name</label>
+                    <input type="text" id="signupName" required placeholder="John Doe">
+                </div>
+                <div class="input-group">
+                    <label for="signupEmail">Email</label>
+                    <input type="email" id="signupEmail" required placeholder="your@email.com">
+                </div>
+                <div class="input-group">
+                    <label for="signupPassword">Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="signupPassword" required placeholder="••••••••" minlength="6">
+                        <button type="button" class="password-toggle" data-target="signupPassword">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signupConfirmPassword">Confirm Password</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" id="signupConfirmPassword" required placeholder="••••••••" minlength="6">
+                        <button type="button" class="password-toggle" data-target="signupConfirmPassword">
+                            <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                <line x1="1" y1="1" x2="23" y2="23"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary">Create Account</button>
+                <p class="auth-switch">Already have an account? <a href="#" id="showLogin">Sign in</a></p>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main App Container -->
+    <div id="appContainer" class="app-container" style="display: none;">
+        <!-- Header -->
+        <header class="app-header">
+            <button id="menuToggle" class="menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <div class="header-title">
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span id="headerTitle">Expenses</span>
+            </div>
+            <div class="header-actions">
+                <button id="userGreeting" class="user-greeting-btn" title="Manage Account">
+                    <span class="gear-icon">⚙️</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Sidebar Menu -->
+        <nav id="sidebar" class="sidebar">
+            <div class="sidebar-header">
+                <h3>Menu</h3>
+                <button id="closeSidebar" class="close-btn">&times;</button>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#" data-tab="expenses" class="nav-link active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2"/>
+                        <line x1="2" y1="9" x2="22" y2="9"/>
+                    </svg>
+                    <span>Expenses</span>
+                </a></li>
+                <li><a href="#" data-tab="converter" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/>
+                        <line x1="12" y1="6" x2="12" y2="12"/>
+                        <line x1="16" y1="10" x2="12" y2="12"/>
+                    </svg>
+                    <span>Currency Converter</span>
+                </a></li>
+                <li><a href="#" data-tab="price-checker" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="1" x2="12" y2="23"/>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    </svg>
+                    <span>Price Checker</span>
+                </a></li>
+                <li><a href="#" data-tab="translator" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12.87 15.07l-2.54-2.51.03-.03A17.52 17.52 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11.76-2.04zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2l-4.5-12zm-2.62 7l1.62-4.33L19.12 17h-3.24z"/>
+                    </svg>
+                    <span>Translator</span>
+                </a></li>
+                <li><a href="#" data-tab="map" class="nav-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                        <circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    <span>Map Navigation</span>
+                </a></li>
+            </ul>
+            <div class="sidebar-footer">
+                <div class="theme-toggle">
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="toggle-slider"></span>
+                    </label>
+                    <span>Dark Mode</span>
+                </div>
+                <button id="logoutBtn" class="btn-logout">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                        <polyline points="16 17 21 12 16 7"/>
+                        <line x1="21" y1="12" x2="9" y2="12"/>
+                    </svg>
+                    Logout
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Expenses Tab -->
+            <div id="expensesTab" class="tab-content active">
+                <div class="summary-cards">
+                    <div class="summary-card budget-card">
+                        <div class="budget-header-row">
+                            <h3>Budget</h3>
+                            <div class="budget-actions">
+                                <button id="setBudgetBtn" class="btn-icon-budget" title="Set Budget">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="5" x2="12" y2="19"/>
+                                        <line x1="5" y1="12" x2="19" y2="12"/>
+                                    </svg>
+                                </button>
+                                <button id="editBudgetBtn" class="btn-icon-budget" title="View/Edit Budget" style="display: none;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                    </svg>
+                                </button>
+                                <button id="deleteBudgetBtnCard" class="btn-icon-budget" title="Delete Budget & Expenses" style="display: none;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="3 6 5 6 21 6"/>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="amount" id="budgetAmount">Not Set</p>
+                        <p class="budget-name" id="budgetName"></p>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Remaining</h3>
+                        <p class="amount" id="remainingBudget">₱0.00</p>
+                        <span class="period budget-status" id="budgetStatus"></span>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Total Expenses</h3>
+                        <p class="amount" id="totalExpenses">₱0.00</p>
+                        <span class="period" id="currentPeriod"></span>
+                    </div>
+                </div>
+
+                <div class="action-bar">
+                    <div class="filter-group">
+                        <input type="date" id="dateSelector" class="date-selector">
+                        <select id="currencyFilter" class="filter-select">
+                            <option value="native">Show Original</option>
+                            <option value="PHP" selected>Convert to PHP</option>
+                            <option value="USD">Convert to USD</option>
+                            <option value="EUR">Convert to EUR</option>
+                            <option value="GBP">Convert to GBP</option>
+                            <option value="JPY">Convert to JPY</option>
+                            <option value="KRW">Convert to KRW</option>
+                            <option value="SGD">Convert to SGD</option>
+                        </select>
+                        <button id="addExpenseBtn" class="btn-primary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Expense
+                        </button>
+                        <button id="exportPdfBtn" class="btn-secondary">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7 10 12 15 17 10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <div class="expenses-list" id="expensesList">
+                    <p class="empty-state">No expenses yet. Add your first expense to get started!</p>
+                </div>
+            </div>
+
+            <!-- Currency Converter Tab -->
+            <div id="converterTab" class="tab-content">
+                <div class="converter-container">
+                    <h2>Currency Converter</h2>
+                    <div class="converter-card">
+                        <div class="currency-input">
+                            <label>From</label>
+                            <div class="input-with-select">
+                                <input type="number" id="fromAmount" placeholder="0.00" value="1" min="0" step="0.01">
+                                <select id="fromCurrency" class="currency-select">
+                                    <option value="PHP" selected>PHP - Philippine Peso</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="JPY">JPY - Japanese Yen</option>
+                                    <option value="CNY">CNY - Chinese Yuan</option>
+                                    <option value="KRW">KRW - South Korean Won</option>
+                                    <option value="SGD">SGD - Singapore Dollar</option>
+                                    <option value="AUD">AUD - Australian Dollar</option>
+                                    <option value="CAD">CAD - Canadian Dollar</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="swapCurrencies" class="swap-btn">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <polyline points="19 12 12 19 5 12"/>
+                            </svg>
+                        </button>
+
+                        <div class="currency-input">
+                            <label>To</label>
+                            <div class="input-with-select">
+                                <input type="number" id="toAmount" placeholder="0.00" readonly>
+                                <select id="toCurrency" class="currency-select">
+                                    <option value="USD" selected>USD - US Dollar</option>
+                                    <option value="PHP">PHP - Philippine Peso</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="JPY">JPY - Japanese Yen</option>
+                                    <option value="CNY">CNY - Chinese Yuan</option>
+                                    <option value="KRW">KRW - South Korean Won</option>
+                                    <option value="SGD">SGD - Singapore Dollar</option>
+                                    <option value="AUD">AUD - Australian Dollar</option>
+                                    <option value="CAD">CAD - Canadian Dollar</option>
+                                </select>
+                            </div>
+                            <div id="toAmountFormatted" class="formatted-amount"></div>
+                        </div>
+
+                        <div class="exchange-rate" id="exchangeRate"></div>
+                        <div class="rate-update" id="rateUpdate"></div>
+                        <div class="rate-source">
+                            <small>Source: <a href="https://www.exchangerate-api.com/" target="_blank" rel="noopener noreferrer">ExchangeRate-API</a></small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Price Checker Tab -->
+            <div id="priceCheckerTab" class="tab-content">
+                <div class="price-checker-container">
+                    <h2>International Price Checker</h2>
+                    <p class="tab-description">Check if item prices are fair across different countries</p>
+                    
+                    <div class="price-checker-card">
+                        <div class="input-group">
+                            <label for="itemName">Item Name</label>
+                            <input type="text" id="itemName" placeholder="e.g., iPhone 15 Pro, Nike Air Max">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="itemPrice">Price in Country</label>
+                            <div class="price-input-group">
+                                <input type="number" id="itemPrice" placeholder="0.00" min="0" step="0.01">
+                                <select id="priceCountry" class="country-select">
+                                    <option value="PH">Philippines (PHP)</option>
+                                    <option value="US">United States (USD)</option>
+                                    <option value="GB">United Kingdom (GBP)</option>
+                                    <option value="JP">Japan (JPY)</option>
+                                    <option value="SG">Singapore (SGD)</option>
+                                    <option value="AU">Australia (AUD)</option>
+                                    <option value="CA">Canada (CAD)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <button id="checkPriceBtn" class="btn-primary">Check Price</button>
+
+                        <div id="priceResults" class="price-results" style="display: none;">
+                            <div class="price-verdict">
+                                <div class="verdict-badge" id="verdictBadge"></div>
+                                <h3 id="verdictText"></h3>
+                            </div>
+                            <div class="price-details">
+                                <div class="price-row">
+                                    <span>Price in original currency:</span>
+                                    <strong id="originalPrice"></strong>
+                                </div>
+                                <div class="price-row">
+                                    <span>Converted to PHP:</span>
+                                    <strong id="convertedPrice"></strong>
+                                </div>
+                                <div class="price-row">
+                                    <span>Market average (PHP):</span>
+                                    <strong id="marketAverage"></strong>
+                                </div>
+                                <div class="price-row highlight">
+                                    <span>Difference:</span>
+                                    <strong id="priceDifference"></strong>
+                                </div>
+                            </div>
+                            <div class="price-analysis" id="priceAnalysis"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Translator Tab -->
+            <div id="translatorTab" class="tab-content">
+                <div class="translator-container">
+                    <h2>Language Translator</h2>
+                    <p class="tab-description">Translate text between languages instantly</p>
+                    
+                    <div class="translator-card">
+                        <div class="language-selectors">
+                            <select id="sourceLanguage" class="language-select">
+                                <option value="auto">Auto Detect</option>
+                                <option value="en">English</option>
+                                <option value="tl">Filipino</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                                <option value="ja">Japanese</option>
+                                <option value="ko">Korean</option>
+                                <option value="zh">Chinese (Simplified)</option>
+                                <option value="ar">Arabic</option>
+                                <option value="ru">Russian</option>
+                                <option value="pt">Portuguese</option>
+                            </select>
+                            <button id="swapLanguages" class="swap-btn small">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="17 1 21 5 17 9"/>
+                                    <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                                    <polyline points="7 23 3 19 7 15"/>
+                                    <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+                                </svg>
+                            </button>
+                            <select id="targetLanguage" class="language-select">
+                                <option value="en">English</option>
+                                <option value="tl" selected>Filipino</option>
+                                <option value="es">Spanish</option>
+                                <option value="fr">French</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                                <option value="ja">Japanese</option>
+                                <option value="ko">Korean</option>
+                                <option value="zh">Chinese (Simplified)</option>
+                                <option value="ar">Arabic</option>
+                                <option value="ru">Russian</option>
+                                <option value="pt">Portuguese</option>
+                            </select>
+                        </div>
+
+                        <div class="translation-panels">
+                            <div class="translation-panel">
+                                <textarea id="sourceText" placeholder="Enter text to translate..." rows="8"></textarea>
+                                <div class="char-count" id="sourceCharCount">0 / 5000</div>
+                            </div>
+                            <div class="translation-panel">
+                                <textarea id="translatedText" placeholder="Translation will appear here..." rows="8" readonly></textarea>
+                                <button id="copyTranslation" class="copy-btn" style="display: none;">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Map Navigation Tab -->
+            <div id="mapTab" class="tab-content">
+                <div class="map-container">
+                    <h2>Map Navigation with Geoapify</h2>
+                    <div class="geoapify-container">
+                        <div class="geoapify-sidebar">
+                            <div class="geoapify-tabs">
+                                <button class="geoapify-tab active" data-tab="geocoding">Geocoding</button>
+                                <button class="geoapify-tab" data-tab="routing">Routing</button>
+                            </div>
+                            
+                            <!-- Geocoding Tab Content -->
+                            <div id="geocodingTab" class="geoapify-tab-content active">
+                                <div class="search-section">
+                                    <label>Search Location:</label>
+                                    <input type="text" id="geocodeSearch" placeholder="e.g., Mapua University" class="geo-input">
+                                    <button id="geocodeBtn" class="btn-primary">Search</button>
+                                </div>
+                                <div id="geocodeResults" class="results-section"></div>
+                            </div>
+                            
+                            <!-- Routing Tab Content -->
+                            <div id="routingTab" class="geoapify-tab-content">
+                                <div class="route-section">
+                                    <div class="transport-modes">
+                                        <button class="mode-btn active" data-mode="drive" title="Car">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="mode-btn" data-mode="walk" title="Walk">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/>
+                                            </svg>
+                                        </button>
+                                        <button class="mode-btn" data-mode="bicycle" title="Bicycle">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M15.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM5 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5zm5.8-10l2.4-2.4.8.8c1.3 1.3 3 2.1 5.1 2.1V9c-1.5 0-2.7-.6-3.6-1.5l-1.9-1.9c-.5-.4-1-.6-1.6-.6s-1.1.2-1.4.6L7.8 8.4c-.4.4-.6.9-.6 1.4 0 .6.2 1.1.6 1.4L11 14v5h2v-6.2l-2.2-2.3zM19 12c-2.8 0-5 2.2-5 5s2.2 5 5 5 5-2.2 5-5-2.2-5-5-5zm0 8.5c-1.9 0-3.5-1.6-3.5-3.5s1.6-3.5 3.5-3.5 3.5 1.6 3.5 3.5-1.6 3.5-3.5 3.5z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="mode-btn" data-mode="truck" title="Truck">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                                            </svg>
+                                        </button>
+                                        <button class="mode-btn" data-mode="transit" title="Transit">
+                                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2c-4 0-8 .5-8 4v9.5C4 17.43 5.57 19 7.5 19L6 20.5v.5h2l2-2h4l2 2h2v-.5L16.5 19c1.93 0 3.5-1.57 3.5-3.5V6c0-3.5-4-4-8-4zM7.5 17c-.83 0-1.5-.67-1.5-1.5S6.67 14 7.5 14s1.5.67 1.5 1.5S8.33 17 7.5 17zm3.5-7H6V6h5v4zm5.5 7c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm1.5-7h-5V6h5v4z"/>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    
+                                    <div class="waypoint-inputs">
+                                        <div class="waypoint-input-group">
+                                            <label>
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="location-icon">
+                                                    <circle cx="12" cy="12" r="10"/>
+                                                </svg>
+                                                Source:
+                                            </label>
+                                            <input type="text" id="routeSource" placeholder="Enter starting point..." class="geo-input">
+                                            <button class="location-btn" id="useCurrentSource" title="Use current location">
+                                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                                    <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        
+                                        <div class="waypoint-input-group">
+                                            <label>
+                                                <svg viewBox="0 0 24 24" fill="currentColor" class="location-icon">
+                                                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                                </svg>
+                                                Destination:
+                                            </label>
+                                            <input type="text" id="routeDestination" placeholder="Enter destination..." class="geo-input">
+                                        </div>
+                                    </div>
+                                    
+                                    <button id="generateRouteBtn" class="btn-primary generate-btn">Generate Route</button>
+                                </div>
+                                
+                                <div id="routeInfo" class="route-info-section" style="display: none;">
+                                    <h3>Route Information</h3>
+                                    <div id="routeDetails"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="map" class="geoapify-map"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Expense Modal -->
+    <div id="expenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add</h2>
+                <button class="close-modal">&times;</button>
+            </div>
+            <form id="expenseForm">
+                <div class="input-group">
+                    <label for="expenseName">Description</label>
+                    <input type="text" id="expenseName" required placeholder="What did you buy?">
+                </div>
+                <div class="input-group">
+                    <label for="expenseAmount">Amount (₱)</label>
+                    <input type="number" id="expenseAmount" required placeholder="0.00" min="0" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="expenseCurrency">Currency</label>
+                    <select id="expenseCurrency" required>
+                        <option value="PHP" selected>PHP - Philippine Peso</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="KRW">KRW - South Korean Won</option>
+                        <option value="SGD">SGD - Singapore Dollar</option>
+                        <option value="CNY">CNY - Chinese Yuan</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="expenseCategory">Category</label>
+                    <select id="expenseCategory" required>
+                        <option value="">Select category</option>
+                        <option value="food">Food & Dining</option>
+                        <option value="transport">Transportation</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="bills">Bills & Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="health">Health & Fitness</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="expenseDate">Date</label>
+                    <input type="datetime-local" id="expenseDate" required>
+                </div>
+                <div class="input-group">
+                    <label for="expenseNotes">Notes (optional)</label>
+                    <textarea id="expenseNotes" rows="3" placeholder="Additional details..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary cancel-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Expense</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Expense Modal -->
+    <div id="viewExpenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Expense Details</h2>
+                <button class="close-modal" id="closeViewExpense">&times;</button>
+            </div>
+            <div class="expense-details-view">
+                <div class="detail-row">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value" id="viewExpenseName"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Amount:</span>
+                    <span class="detail-value" id="viewExpenseAmount"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Currency:</span>
+                    <span class="detail-value" id="viewExpenseCurrency"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Category:</span>
+                    <span class="detail-value" id="viewExpenseCategory"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Date:</span>
+                    <span class="detail-value" id="viewExpenseDate"></span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Notes:</span>
+                    <span class="detail-value" id="viewExpenseNotes"></span>
+                </div>
+                <div class="convert-section">
+                    <h3>Quick Convert</h3>
+                    <div class="convert-controls">
+                        <select id="quickConvertCurrency" class="currency-select-small">
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="JPY">JPY</option>
+                            <option value="KRW">KRW</option>
+                            <option value="SGD">SGD</option>
+                            <option value="PHP" selected>PHP</option>
+                        </select>
+                        <button id="quickConvertBtn" class="btn-convert">Convert</button>
+                    </div>
+                    <div id="convertResult" class="convert-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Expense Modal -->
+    <div id="editExpenseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Edit Expense</h2>
+                <button class="close-modal" id="closeEditExpense">&times;</button>
+            </div>
+            <form id="editExpenseForm">
+                <input type="hidden" id="editExpenseId">
+                <div class="input-group">
+                    <label for="editExpenseName">Description</label>
+                    <input type="text" id="editExpenseName" required>
+                </div>
+                <div class="input-group">
+                    <label for="editExpenseAmount">Amount</label>
+                    <input type="number" id="editExpenseAmount" required step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="editExpenseCurrency">Currency</label>
+                    <select id="editExpenseCurrency" required>
+                        <option value="PHP">PHP - Philippine Peso</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="KRW">KRW - South Korean Won</option>
+                        <option value="SGD">SGD - Singapore Dollar</option>
+                        <option value="CNY">CNY - Chinese Yuan</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="editExpenseCategory">Category</label>
+                    <select id="editExpenseCategory" required>
+                        <option value="food">Food & Dining</option>
+                        <option value="transport">Transportation</option>
+                        <option value="shopping">Shopping</option>
+                        <option value="bills">Bills & Utilities</option>
+                        <option value="entertainment">Entertainment</option>
+                        <option value="health">Health & Fitness</option>
+                        <option value="education">Education</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="editExpenseDate">Date & Time</label>
+                    <input type="datetime-local" id="editExpenseDate" required>
+                </div>
+                <div class="input-group">
+                    <label for="editExpenseNotes">Notes</label>
+                    <textarea id="editExpenseNotes" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary cancel-edit-btn">Cancel</button>
+                    <button type="submit" class="btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Budget Modal -->
+    <div id="budgetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="budgetModalTitle">Set Budget</h2>
+                <button class="close-modal" id="closeBudget">&times;</button>
+            </div>
+            <form id="budgetForm">
+                <div class="input-group">
+                    <label for="budgetNameInput">Budget Name (Optional)</label>
+                    <input type="text" id="budgetNameInput" placeholder="e.g., Monthly Groceries, Vacation Fund">
+                </div>
+                <div class="input-group">
+                    <label for="budgetAmountInput">Budget Amount</label>
+                    <input type="number" id="budgetAmountInput" required step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="budgetCurrency">Currency</label>
+                    <select id="budgetCurrency" required>
+                        <option value="PHP" selected>PHP - Philippine Peso</option>
+                        <option value="USD">USD - US Dollar</option>
+                        <option value="EUR">EUR - Euro</option>
+                        <option value="GBP">GBP - British Pound</option>
+                        <option value="JPY">JPY - Japanese Yen</option>
+                        <option value="KRW">KRW - South Korean Won</option>
+                        <option value="SGD">SGD - Singapore Dollar</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-icon-modal cancel-budget-btn" title="Cancel">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"/>
+                            <line x1="6" y1="6" x2="18" y2="18"/>
+                        </svg>
+                        <span class="btn-text">Cancel</span>
+                    </button>
+                    <button type="button" id="deleteBudgetBtn" class="btn-icon-modal btn-danger-icon" style="display: none;" title="Delete">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="3 6 5 6 21 6"/>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                        <span class="btn-text">Delete</span>
+                    </button>
+                    <button type="submit" class="btn-icon-modal btn-primary-icon" id="saveBudgetBtn" title="Save">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="20 6 9 17 4 12"/>
+                        </svg>
+                        <span class="btn-text" id="saveBudgetText">Set Budget</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Account Modal -->
+    <div id="manageAccountModal" class="modal">
+        <div class="modal-content manage-account-modal">
+            <div class="modal-header">
+                <h2>Manage Account</h2>
+                <button class="close-modal" id="closeManageAccount">&times;</button>
+            </div>
+            <div class="account-tabs">
+                <button class="account-tab active" data-account-tab="username" title="Username">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                    </svg>
+                    <span class="tab-text">Username</span>
+                </button>
+                <button class="account-tab" data-account-tab="email" title="Email">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <polyline points="22,6 12,13 2,6"/>
+                    </svg>
+                    <span class="tab-text">Email</span>
+                </button>
+                <button class="account-tab" data-account-tab="password" title="Password">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <span class="tab-text">Password</span>
+                </button>
+                <button class="account-tab danger-tab" data-account-tab="danger" title="Danger Zone">
+                    <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    <span class="tab-text">Danger Zone</span>
+                </button>
+            </div>
+            
+            <!-- Username Tab -->
+            <div id="usernameTab" class="account-tab-content active">
+                <form id="updateUsernameForm">
+                    <div class="input-group">
+                        <label for="newUsername">New Username</label>
+                        <input type="text" id="newUsername" required placeholder="Enter new username">
+                    </div>
+                    <button type="submit" class="btn-primary">Update Username</button>
+                </form>
+            </div>
+            
+            <!-- Email Tab -->
+            <div id="emailTab" class="account-tab-content">
+                <form id="updateEmailForm">
+                    <div class="input-group">
+                        <label for="newEmail">New Email</label>
+                        <input type="email" id="newEmail" required placeholder="your@email.com">
+                        <small class="current-info">Current: <span id="currentEmailDisplay"></span></small>
+                    </div>
+                    <div class="input-group">
+                        <label for="emailPassword">Current Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="emailPassword" required placeholder="Enter your password">
+                            <button type="button" class="password-toggle" data-target="emailPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Update Email</button>
+                </form>
+            </div>
+            
+            <!-- Password Tab -->
+            <div id="passwordTab" class="account-tab-content">
+                <form id="updatePasswordForm">
+                    <div class="input-group">
+                        <label for="currentPassword">Current Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="currentPassword" required placeholder="Enter current password">
+                            <button type="button" class="password-toggle" data-target="currentPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="newPassword">New Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="newPassword" required placeholder="Enter new password" minlength="6">
+                            <button type="button" class="password-toggle" data-target="newPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                        <div class="password-input-wrapper">
+                            <input type="password" id="confirmNewPassword" required placeholder="Confirm new password" minlength="6">
+                            <button type="button" class="password-toggle" data-target="confirmNewPassword">
+                                <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                    <line x1="1" y1="1" x2="23" y2="23"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Update Password</button>
+                </form>
+            </div>
+            
+            <!-- Danger Zone Tab -->
+            <div id="dangerTab" class="account-tab-content">
+                <div class="danger-zone">
+                    <h3>Delete Account</h3>
+                    <p class="danger-warning">
+                        ⚠️ Warning: This action cannot be undone. Deleting your account will permanently remove all your data, including expenses, budgets, and settings.
+                    </p>
+                    <form id="deleteAccountForm">
+                        <div class="input-group">
+                            <label for="deletePassword">Enter your password to confirm</label>
+                            <div class="password-input-wrapper">
+                                <input type="password" id="deletePassword" required placeholder="Enter your password">
+                                <button type="button" class="password-toggle" data-target="deletePassword">
+                                    <svg class="eye-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                        <circle cx="12" cy="12" r="3"/>
+                                    </svg>
+                                    <svg class="eye-off-icon" style="display: none;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+                                        <line x1="1" y1="1" x2="23" y2="23"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="confirmDelete" required>
+                                <span>I understand that this action is permanent and cannot be undone</span>
+                            </label>
+                        </div>
+                        <button type="submit" class="btn-danger">Delete My Account</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- Firebase SDK -->
+    <script type="module" src="script.js"></script>
+</body>
+</html>
